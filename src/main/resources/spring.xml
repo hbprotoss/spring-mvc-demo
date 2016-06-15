@@ -1,0 +1,71 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xmlns:context="http://www.springframework.org/schema/context"
+       xmlns:mvc="http://www.springframework.org/schema/mvc"
+       xmlns:beans="http://www.springframework.org/schema/beans"
+       xmlns:p="http://www.springframework.org/schema/p"
+       xsi:schemaLocation="http://www.springframework.org/schema/beans
+       http://www.springframework.org/schema/beans/spring-beans.xsd
+       http://www.springframework.org/schema/context
+       http://www.springframework.org/schema/context/spring-context-3.0.xsd http://www.springframework.org/schema/mvc http://www.springframework.org/schema/mvc/spring-mvc.xsd
+       http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd">
+
+
+    <context:annotation-config/>
+    <beans:bean class="org.springframework.session.data.redis.config.annotation.web.http.RedisHttpSessionConfiguration"/>
+    <beans:bean class="org.springframework.data.redis.connection.jedis.JedisConnectionFactory"
+                p:hostName="192.168.1.230"
+                p:port="6379"
+    />
+
+    <!--<bean id="gsonBuilder" class="com.google.gson.GsonBuilder">-->
+        <!--<property name="dateFormat" value="yyyy'-'MM'-'dd'T'HH':'mm':'ss'.'SSS'Z'" />-->
+    <!--</bean>-->
+    <!--<bean class="org.springframework.beans.factory.config.MethodInvokingFactoryBean">-->
+        <!--<property name="targetObject" ref="gsonBuilder" />-->
+        <!--<property name="targetMethod" value="excludeFieldsWithoutExposeAnnotation" />-->
+    <!--</bean>-->
+    <!-- 默认的注解映射的支持 -->
+    <bean id="gsonBuilder" class="com.google.gson.GsonBuilder">
+        <property name="fieldNamingPolicy" value="LOWER_CASE_WITH_UNDERSCORES"/>
+    </bean>
+    <bean class="org.springframework.beans.factory.config.MethodInvokingFactoryBean">
+        <property name="targetObject" ref="gsonBuilder" />
+        <property name="targetMethod" value="serializeNulls" />
+    </bean>
+    <mvc:annotation-driven>
+        <mvc:message-converters>
+            <bean class="org.springframework.http.converter.json.GsonHttpMessageConverter">
+                <property name="gson">
+                    <bean class="com.google.gson.Gson" factory-bean="gsonBuilder" factory-method="create"/>
+                </property>
+            </bean>
+        </mvc:message-converters>
+    </mvc:annotation-driven>
+
+    <import resource="classpath:dao.xml"></import>
+    <import resource="classpath:service.xml"></import>
+    <import resource="classpath:security.xml"/>
+
+    <context:component-scan base-package="io.hbprotoss.web.controller"></context:component-scan>
+
+    <!--<bean class="org.springframework.web.servlet.mvc.annotation.AnnotationMethodHandlerAdapter">-->
+        <!--<property name="messageConverters">-->
+            <!--<list>-->
+                <!--<bean class="org.springframework.http.converter.json.GsonHttpMessageConverter"/>-->
+            <!--</list>-->
+        <!--</property>-->
+    <!--</bean>-->
+
+    <mvc:interceptors>
+        <mvc:interceptor>
+            <mvc:mapping path="/*"/>
+            <beans:bean class="io.hbprotoss.web.interceptor.TimerInterceptor"/>
+        </mvc:interceptor>
+        <!--<mvc:interceptor>-->
+            <!--<mvc:mapping path="/json"/>-->
+            <!--<beans:bean class="io.hbprotoss.web.interceptor.RequestInteceptor"/>-->
+        <!--</mvc:interceptor>-->
+    </mvc:interceptors>
+</beans>
