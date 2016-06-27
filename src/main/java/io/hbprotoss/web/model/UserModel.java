@@ -1,5 +1,7 @@
 package io.hbprotoss.web.model;
 
+import io.hbprotoss.web.validator.annotation.CheckDate;
+
 /**
  * Created by hbprotoss on 9/26/15.
  */
@@ -8,6 +10,16 @@ public class UserModel {
     private String name;
     private int age;
     private String description;
+    @CheckDate
+    private String date;
+
+    public String getDate() {
+        return date;
+    }
+
+    public void setDate(String date) {
+        this.date = date;
+    }
 
     public int getId() {
         return id;

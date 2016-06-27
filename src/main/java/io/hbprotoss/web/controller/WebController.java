@@ -4,6 +4,9 @@ import io.hbprotoss.web.mapper.UserMapper;
 import io.hbprotoss.web.model.JsonModel;
 import io.hbprotoss.web.model.UserModel;
 import io.hbprotoss.web.service.UserService;
+import io.hbprotoss.web.validator.annotation.CheckDate;
+import io.swagger.annotations.ApiOperation;
+import io.swagger.annotations.ApiParam;
 import org.springframework.security.access.annotation.Secured;
 import org.springframework.session.data.redis.config.annotation.web.http.EnableRedisHttpSession;
 import org.springframework.stereotype.Controller;
@@ -16,6 +19,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 
 import javax.annotation.Resource;
+import javax.validation.Valid;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -24,6 +28,7 @@ import java.util.Map;
  */
 
 @Controller
+@RequestMapping("/")
 public class WebController {
 
     private final Logger logger = LoggerFactory.getLogger(WebController.class);
@@ -38,9 +43,10 @@ public class WebController {
         return "home";
     }
 
-    @RequestMapping(value = "/json", method = RequestMethod.GET)
+    @RequestMapping(value = "json", method = RequestMethod.GET)
     @ResponseBody
-    public JsonModel json(@RequestParam int id, @RequestParam String name) {
+    @ApiOperation(value = "返回JSON MODEL", httpMethod = "GET", response = JsonModel.class, notes = "notes是什么")
+    public JsonModel json(@ApiParam(required = true, name = "id", value = "ID") @RequestParam int id, @ApiParam(required = true, name = "name", value = "name") @RequestParam String name) {
         return new JsonModel(id, name);
     }
 
@@ -82,6 +88,12 @@ public class WebController {
         map2.put("name", "2");
         map.put("2", map2);
         return map;
+    }
+
+    @RequestMapping(value = "/check/date")
+    @ResponseBody
+    public String checkDate(@Valid UserModel model) {
+        return model.getDate();
     }
 
     @RequestMapping(value = "/admin", method = RequestMethod.GET)
