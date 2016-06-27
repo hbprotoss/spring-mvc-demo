@@ -10,6 +10,7 @@ import springfox.documentation.spring.web.json.Json;
 
 /**
  * Created by hbprotoss on 6/27/16.
+ * springfox兼容GSON的patch
  */
 @Configuration
 public class GsonHttpMessageConverterConfig {
