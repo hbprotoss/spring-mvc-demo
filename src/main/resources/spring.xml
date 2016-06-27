@@ -56,5 +56,6 @@
         <property name="providerClass" value="org.hibernate.validator.HibernateValidator"/>
     </bean>
 
+    <!--springfox生成rest api文档的配置-->
     <bean class="io.hbprotoss.web.app.Swagger2Config" />
 </beans>
